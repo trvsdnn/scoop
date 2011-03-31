@@ -20,6 +20,7 @@ module Scoop
 
       def add_object(key, value)
         response = Scoop.request(:put, "/#{key}", :host => @host, :body => value)
+        Scoop::S3Object.new(@name, :name => key)
       end
 
 
@@ -57,6 +58,8 @@ module Scoop
             response = Scoop.request(:get, '/')
             @@buckets = Parser.parse(response.body)
           end
+
+          @@buckets
         end
 
         def [](name)
@@ -66,6 +69,10 @@ module Scoop
         def create(name)
           response = Scoop.request(:put, '/', :host => "#{name}.#{Scoop::Request::HOST}")
           Scoop::Bucket.new(name)
+        end
+
+        def exist?(name)
+          self.all.any? { |b| b.name == name }
         end
 
       end

@@ -3,11 +3,11 @@ module Scoop
 
     class S3Object
 
-      attr_reader :attributes
+      attr_reader :name
 
       def initialize(bucket, attributes = {})
         @bucket = bucket
-        @attributes = attributes
+        @name = attributes[:name]
       end
 
     end

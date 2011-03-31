@@ -1,3 +1,4 @@
+require 'yaml'
 require 'time'
 require 'base64'
 require 'digest/md5'
@@ -11,11 +12,14 @@ require 'scoop/bucket'
 require 'scoop/object'
 require 'scoop/builder'
 require 'scoop/parser'
+require 'scoop/extension'
 require 'scoop/authentication'
 require 'scoop/request'
+require 'scoop/exceptions'
 
 module Scoop
   include Scoop::Resource
+  include Scoop::Extension
 
   class << self
 
@@ -33,6 +37,16 @@ module Scoop
 
     def secret_access_key
       @@secret_access_key
+    end
+
+    def load_keys_config
+      keys_file = File.join(ENV['HOME'], '.scoop')
+
+      if File.exist? keys_file
+        config = YAML.load_file(keys_file)
+        @@access_key_id = config['access_key_id']
+        @@secret_access_key = config['secret_access_key']
+      end
     end
 
     def request(type, path, options={})
